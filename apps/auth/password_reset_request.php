@@ -27,52 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Password Reset</title>
   <link rel="stylesheet" href="../assets/styles.css">
-  <style>
-    body {
-      background: url('../assets/images/getty-images-cyPdvGd-r10-unsplash (1).jpg') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .reset-form {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 8px;
-      padding: 20px;
-      max-width: 340px;
-      width: 100%;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .reset-form h1 {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-    }
-    .message {
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 4px;
-      background: #e8f5e9;
-      border: 1px solid #4caf50;
-      color: #2e7d32;
-    }
-    .reset-link {
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 4px;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      word-break: break-all;
-    }
-    .back-link {
-      margin-top: 12px;
-      text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/auth-forms.css">
 </head>
 <body>
-  <div class="reset-form">
+  <div class="auth-form-container">
     <h1>Password Reset</h1>
     <?php if ($message): ?>
       <div class="message"><?=htmlspecialchars($message)?></div>
