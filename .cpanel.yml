@@ -1,7 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/charle22/public_html/tools.veerl.es/apps/loginveerles/
-    - /bin/cp -R * $DEPLOYPATH
-    - /bin/cp -R .env.production $DEPLOYPATH/apps/auth/.env.example.production
-    - /bin/cp .gitignore $DEPLOYPATH/
+    - export DEPLOYPATH=/home/charle22/public_html/tools.veerl.es/
+    - /bin/cp -R apps/* $DEPLOYPATH/apps/
