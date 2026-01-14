@@ -5,8 +5,8 @@ apps/auth/config.php
 # JWT Keys (NEVER commit private key!)
 apps/auth/jwt_private.pem
 
-# Vendor dependencies
-vendor/
+# Vendor dependencies (commented out for deployment to servers without composer)
+# vendor/
 
 # IDE files
 .vscode/
