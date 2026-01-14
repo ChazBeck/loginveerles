@@ -73,7 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]
             );
             
-            $return = $_GET['return_to'] ?? '../index.php';
+            // Default redirect based on user role
+            if (isset($_GET['return_to']) && $_GET['return_to']) {
+                $return = $_GET['return_to'];
+            } elseif (jwt_is_admin()) {
+                $return = 'admin/index.php';
+            } else {
+                $return = 'index.php';
+            }
             header('Location: ' . $return);
             exit;
         } else {
