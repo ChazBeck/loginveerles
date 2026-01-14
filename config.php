@@ -1,36 +1,67 @@
 <?php
-// Copy this to config.php and set values for your environment
+
+// Helper function to read environment variables
+function env($key, $default = null) {
+    static $env_loaded = false;
+    static $env_vars = [];
+    
+    if (!$env_loaded) {
+        $env_file = __DIR__ . '/.env';
+        if (file_exists($env_file)) {
+            $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos(trim($line), '#') === 0) continue;
+                list($key_part, $value) = explode('=', $line, 2);
+                $env_vars[trim($key_part)] = trim($value);
+            }
+        }
+        $env_loaded = true;
+    }
+    
+    return isset($env_vars[$key]) ? $env_vars[$key] : $default;
+}
+
+// Detect environment
+$is_production = env('APP_ENV') === 'production';
+
+// Auto-detect HTTPS
+$is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+    || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+    || (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+
 return [
     'db' => [
-        'host' => '127.0.0.1',
-        'name' => 'loginveerles',
-        'user' => 'root',
-        'pass' => '',
-        'charset' => 'utf8mb4',
+        'host' => env('DB_HOST', 'localhost'),
+        'name' => env('DB_NAME', 'loginveerles'),
+        'user' => env('DB_USER', 'root'),
+        'pass' => env('DB_PASS', ''),
+        'charset' => env('DB_CHARSET', 'utf8mb4'),
     ],
+    
     // Cookie and session settings
-    'cookie_name' => 'appsess', // Legacy session cookie (keep for backward compatibility)
-    'jwt_cookie_name' => 'sso_token', // New JWT cookie for SSO
-    'jwt_cookie_domain' => 'localhost', // Domain for SSO cookie (change to tools.veerl.es in production)
-    // For local XAMPP set secure=false; on GreenGeeks set true and ensure HTTPS
-    'cookie_secure' => false,
-    'cookie_samesite' => 'Lax', // Lax is a good default
-    'cookie_path' => '/',
-    'session_lifetime_minutes' => 30,
-    'jwt_lifetime_minutes' => 60, // JWT token lifetime (60 minutes)
-    'remember_days' => 30,
-    // Application base URL (no trailing slash)
-    // For local testing use localhost; remember to change back before production.
-    'base_url' => 'http://localhost/loginveerles/apps/auth',
-    // Email from address for password resets
-    'mail_from' => 'no-reply@veerl.es',
-    // Optional SMTP settings. Uses PHPMailer when host is set; otherwise falls back to PHP mail().
+    'cookie_name' => env('COOKIE_NAME', 'appsess'),
+    'jwt_cookie_name' => env('JWT_COOKIE_NAME', 'sso_token'),
+    'jwt_cookie_domain' => env('JWT_COOKIE_DOMAIN', 'localhost'),
+    'cookie_secure' => filter_var(env('COOKIE_SECURE', $is_https), FILTER_VALIDATE_BOOLEAN),
+    'cookie_samesite' => env('COOKIE_SAMESITE', 'Lax'),
+    'cookie_path' => env('COOKIE_PATH', '/'),
+    'session_lifetime_minutes' => (int)env('SESSION_LIFETIME_MINUTES', 30),
+    'jwt_lifetime_minutes' => (int)env('JWT_LIFETIME_MINUTES', 60),
+    'remember_days' => (int)env('REMEMBER_DAYS', 30),
+    
+    // Application base URL
+    'base_url' => env('APP_BASE_URL', 'http://localhost/loginveerles'),
+    
+    // Email settings
+    'mail_from' => env('MAIL_FROM', 'no-reply@example.com'),
+    
+    // SMTP settings
     'smtp' => [
-        'host' => 'mail.veerl.es',
-        'port' => 465,
-        'username' => 'no-reply@veerl.es',
-        'password' => 'xhnk%mVu+]{(2Oby',
-        'secure' => 'ssl', // 'tls' or 'ssl' or ''
-        'timeout' => 30,
+        'host' => env('SMTP_HOST', ''),
+        'port' => (int)env('SMTP_PORT', 587),
+        'username' => env('SMTP_USERNAME', ''),
+        'password' => env('SMTP_PASSWORD', ''),
+        'secure' => env('SMTP_SECURE', 'tls'),
+        'timeout' => (int)env('SMTP_TIMEOUT', 30),
     ],
 ];
