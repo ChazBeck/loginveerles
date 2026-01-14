@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Default redirect based on user role
             if (isset($_GET['return_to']) && $_GET['return_to']) {
                 $return = $_GET['return_to'];
-            } elseif (jwt_is_admin()) {
+            } elseif (strcasecmp($user['role'] ?? '', 'admin') === 0) {
                 $return = 'admin/index.php';
             } else {
                 $return = 'index.php';
