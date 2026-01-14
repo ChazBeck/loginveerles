@@ -60,14 +60,60 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) { header('Location: index.php'); exit; }
 
 ?>
+<header class="header">
+  <a href="../index.php" class="logo">Apps Auth</a>
+  <nav>
+    <?php if (jwt_is_admin()): ?>
+      <a href="index.php">ADMIN</a>
+    <?php endif; ?>
+    <a href="../logout.php">LOG OUT</a>
+  </nav>
+</header>
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Edit User - Admin</title>
-  <link rel="stylesheet" href="../../assets/styles.css">
   <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2000') center/cover fixed;
+      min-height: 100vh;
+    }
+    .header {
+      background: rgba(4, 53, 70, 0.95);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header .logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .header nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .header nav a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .header nav a:hover {
+      background: rgba(229, 131, 37, 0.2);
+    }
+    .header nav a.active {
+      background: #E58325;
+    }
     .admin-container {
       max-width: 800px;
       margin: 40px auto;
