@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/../include/auth_include.php';
-auth_init();
-auth_require_admin();
+require __DIR__ . '/../include/jwt_include.php';
+jwt_init();
+jwt_require_admin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method not allowed'; exit; }
 $csrf = $_POST['csrf_token'] ?? '';

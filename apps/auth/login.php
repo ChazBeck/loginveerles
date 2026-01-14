@@ -1,5 +1,8 @@
 <?php
 require __DIR__ . '/include/auth_include.php';
+
+use Firebase\JWT\JWT;
+
 auth_init();
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,30 +16,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $remember = isset($_POST['remember']);
         list($ok, $msg) = auth_login($email, $pass, $remember);
         if ($ok) {
-            // Validate redirect URL to prevent open redirect vulnerability
-            $app_base = auth_get_app_base_path();
-            $return = $_GET['return_to'] ?? $app_base . '/index.php';
-            // Whitelist allowed redirect paths (relative URLs only)
-            $allowed_paths = [
-                $app_base . '/index.php',
-                $app_base . '/',
-                $app_base . '/auth/',
-                $app_base . '/admin/',
-                $app_base . '/pulse/',
-                $app_base . '/url_shortener/',
+            // Login successful - now issue JWT
+            $user = auth_get_user();
+            $jti = bin2hex(random_bytes(32)); // JWT ID for session tracking
+            
+            // Load private key for JWT signing
+            $privateKey = file_get_contents(__DIR__ . '/jwt_private.pem');
+            
+            // Calculate expiration time
+            $jwtLifetime = ($config['jwt_lifetime_minutes'] ?? 60) * 60;
+            $issuedAt = time();
+            $expiresAt = $issuedAt + $jwtLifetime;
+            
+            // Create JWT payload
+            $payload = [
+                'iss' => $_SERVER['HTTP_HOST'] ?? 'tools.veerl.es', // Issuer
+                'iat' => $issuedAt, // Issued at
+                'exp' => $expiresAt, // Expiration
+                'sub' => (string)$user['id'], // Subject (user ID)
+                'jti' => $jti, // JWT ID for revocation
+                'email' => $user['email'],
+                'first_name' => $user['first_name'],
+                'last_name' => $user['last_name'],
+                'role' => $user['role'],
             ];
-            // Check if redirect starts with any allowed path
-            $is_valid = false;
-            foreach ($allowed_paths as $path) {
-                if (strpos($return, $path) === 0) {
-                    $is_valid = true;
-                    break;
-                }
+            
+            // Generate JWT
+            $jwt = JWT::encode($payload, $privateKey, 'RS256');
+            
+            // Update session record with JWT ID for revocation capability
+            try {
+                $pdo = auth_db();
+                $stmt = $pdo->prepare('UPDATE sessions SET session_token = :jti WHERE user_id = :uid ORDER BY created_at DESC LIMIT 1');
+                $stmt->execute([':jti' => $jti, ':uid' => $user['id']]);
+            } catch (Exception $e) {
+                // Continue even if session update fails
             }
-            // Fallback to default if invalid
-            if (!$is_valid) {
-                $return = $app_base . '/index.php';
-            }
+            
+            // Set JWT cookie
+            $cookieName = $config['jwt_cookie_name'] ?? 'sso_token';
+            $domain = $config['jwt_cookie_domain'] ?? '';
+            $path = $config['cookie_path'] ?? '/';
+            $secure = (bool)($config['cookie_secure'] ?? false);
+            $sameSite = $config['cookie_samesite'] ?? 'Lax';
+            
+            setcookie(
+                $cookieName,
+                $jwt,
+                [
+                    'expires' => $expiresAt,
+                    'path' => $path,
+                    'domain' => $domain,
+                    'secure' => $secure,
+                    'httponly' => true,
+                    'samesite' => $sameSite,
+                ]
+            );
+            
+            $return = $_GET['return_to'] ?? '../index.php';
             header('Location: ' . $return);
             exit;
         } else {
@@ -45,49 +82,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?><!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Veerless Tools</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Tools</title>
+  <link rel="stylesheet" href="../assets/auth-forms.css">
 </head>
 <body>
-<?php 
-// Include shared header (modified for login page - no logout link)
-?>
-<header class="site-header">
-  <div class="container">
-    <img src="../assets/logo.png" alt="Veerless Logo" class="site-logo">
-    <nav>
-      <ul>
-        <li><a href="../index.php">HOME</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-<main style="background: url('../assets/images/getty-images-cyPdvGd-r10-unsplash (1).jpg') no-repeat center center/cover; min-height: calc(100vh - 80px); display: flex; align-items: center; padding: 20px 0;">
-  <div class="login-form">
-    <h1 style="margin-top: 0; margin-bottom: 16px; font-size: 1.5rem;">Sign In</h1>
-    <?php if ($error): ?><div style="color:#E53935;margin-bottom:16px;"><?=htmlspecialchars($error)?></div><?php endif; ?>
-    <form method="post">
-      <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" autocomplete="email" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" autocomplete="current-password" required>
-      </div>
-      <div class="form-group" style="display:flex;align-items:center;">
-        <input type="checkbox" name="remember" id="remember" style="width:auto;margin-right:8px;">
-        <label for="remember" style="margin:0;text-transform:none;font-weight:normal;">Remember me</label>
-      </div>
-      <button type="submit">Sign in</button>
-    </form>
-    <p style="margin-top:12px;margin-bottom:0;text-align:center;font-size:0.9rem;"><a href="password_reset_request.php" style="color:#E58325;text-decoration:none;">Forgot password / Set password</a></p>
-  </div>
-</main>
+<div class="auth-form-container">
+  <h1>Login</h1>
+  <?php if ($error): ?><div class="error"><?=htmlspecialchars($error)?></div><?php endif; ?>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
+    <label>Email
+      <input type="email" name="email" autocomplete="email" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" name="remember"> Remember me
+    </label>
+    <button type="submit">Sign in</button>
+  </form>
+  <p class="form-footer"><a href="password_reset_request.php">Forgot password / Set password</a></p>
+</div>
 </body>
 </html>

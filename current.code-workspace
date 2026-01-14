@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"name": "current",
+			"path": "../../../../../Users/charlesbeck/Downloads/current"
+		},
+		{
+			"name": "loginveerles",
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.linkedEditing": true
+	}
+}

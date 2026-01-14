@@ -1,26 +1,26 @@
 <?php
-// Main Apps Dashboard - v1.0
-require __DIR__ . '/auth/include/auth_include.php';
-auth_init();
-auth_require_login();
-$user = auth_get_user();
-?><!doctype html>
+require __DIR__ . '/auth/include/jwt_include.php';
+jwt_init();
+jwt_require_login();
+$user = jwt_get_user();
+?>
+<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Apps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apps - Tools</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
 <?php include __DIR__ . '/_header.php'; ?>
 <main class="hero">
   <div class="container">
-    <div class="welcome">Welcome</div>
-    <h1>Apps Portal</h1>
-    <p>Hello <?=htmlspecialchars($user['first_name'] ?: $user['email'] ?? '')?> — choose an app below.</p>
+    <h1 class="welcome">Welcome, <?=htmlspecialchars($user['first_name'] ?? $user['email'])?></h1>
+    <p>Choose an application:</p>
     <div class="buttons">
-      <a class="button" href="url_shortener/">URL Shortener</a>
-      <a class="button" href="pulse/">Pulse</a>
+      <a href="pulse/" class="button">Pulse</a>
+      <a href="url_shortener/" class="button">URL Shortener</a>
     </div>
   </div>
 </main>

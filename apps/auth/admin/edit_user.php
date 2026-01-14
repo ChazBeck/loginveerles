@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/../include/auth_include.php';
-auth_init();
-auth_require_admin();
+require __DIR__ . '/../include/jwt_include.php';
+jwt_init();
+jwt_require_admin();
 
 $pdo = auth_db();
 
@@ -59,120 +59,124 @@ $stmt->execute([':id' => $id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) { header('Location: index.php'); exit; }
 
-?><!doctype html>
+?>
+<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit User - <?=htmlspecialchars($user['email'])?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit User - Admin</title>
   <link rel="stylesheet" href="../../assets/styles.css">
   <style>
     .admin-container {
       max-width: 800px;
       margin: 40px auto;
-      padding: 0 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .admin-section {
-      background: #FFFFFF;
-      border: 1px solid #CAC1A9;
-      border-radius: 6px;
-      padding: 30px;
+    .admin-container h1 {
+      color: #043546;
       margin-bottom: 30px;
-      box-shadow: 0 2px 4px rgba(4, 53, 70, 0.1);
+      font-size: 1.8rem;
     }
-    .admin-section h2 {
-      margin-top: 0;
-      color: #043546;
-      font-family: 'Archivo', sans-serif;
-      border-bottom: 2px solid #E58325;
-      padding-bottom: 10px;
+    .edit-form {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 4px;
     }
-    .admin-form label {
+    .edit-form label {
       display: block;
-      margin: 15px 0 5px;
+      margin-bottom: 20px;
       color: #043546;
-      font-family: 'Archivo', sans-serif;
-      font-weight: 600;
+      font-weight: 500;
     }
-    .admin-form input[type="text"],
-    .admin-form select {
+    .edit-form input[type="text"],
+    .edit-form select {
       width: 100%;
-      max-width: 400px;
-      padding: 10px;
-      border: 1px solid #CAC1A9;
-      border-radius: 6px;
-      font-family: 'Poppins', sans-serif;
+      max-width: 500px;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-top: 5px;
     }
-    .admin-form button {
-      margin-top: 20px;
-      padding: 12px 30px;
-      background-color: #E58325;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 6px;
+    .edit-form input[type="text"]:focus,
+    .edit-form select:focus {
+      outline: none;
+      border-color: #E58325;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
       cursor: pointer;
-      font-family: 'Archivo', sans-serif;
-      font-weight: 600;
-      text-transform: uppercase;
     }
-    .admin-form button:hover {
-      background-color: #00434F;
+    .edit-form button {
+      background: #E58325;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    .edit-form button:hover {
+      background: #d67520;
     }
     .back-link {
-      display: inline-block;
       margin-top: 20px;
+      text-align: center;
+    }
+    .back-link a {
       color: #E58325;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 500;
     }
-    .back-link:hover {
-      color: #00434F;
+    .back-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-<div class="site-header">
-  <div class="container">
-    <a href="../../index.php"><img class="site-logo" src="../../assets/logo.png" alt="Site logo"></a>
-    <nav>
-      <ul>
-        <li><a href="../../index.php">HOME</a></li>
-        <li><a href="../admin/">ADMIN</a></li>
-        <li><a href="../logout.php">LOG OUT</a></li>
-      </ul>
-    </nav>
-  </div>
-</div>
+<?php include __DIR__ . '/../../_header.php'; ?>
 <div class="admin-container">
-  <div class="admin-section">
-    <h2>✏️ Edit User: <?=htmlspecialchars($user['email'])?></h2>
-    <form method="post" class="admin-form">
-      <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
-      <input type="hidden" name="user_id" value="<?=intval($user['id'])?>">
-      <label>First Name
-        <input type="text" name="first_name" value="<?=htmlspecialchars($user['first_name'])?>">
-      </label>
-      <label>Last Name
-        <input type="text" name="last_name" value="<?=htmlspecialchars($user['last_name'])?>">
-      </label>
-      <label>Role
-        <select name="role">
-          <option value="User" <?= $user['role']==='User' ? 'selected' : '' ?>>User</option>
-          <option value="Admin" <?= $user['role']==='Admin' ? 'selected' : '' ?>>Admin</option>
-        </select>
-      </label>
-      <label style="font-weight: normal;">
-        <input type="checkbox" name="is_active" value="1" <?= $user['is_active'] ? 'checked' : '' ?> style="width: auto; margin-right: 8px;">
-        Active
-      </label>
-      <label style="font-weight: normal;">
-        <input type="checkbox" name="send_reset" value="1" style="width: auto; margin-right: 8px;">
-        Send password reset email
-      </label>
-      <button type="submit">Save Changes</button>
-    </form>
-    <a href="index.php" class="back-link">← Back to User Management</a>
-  </div>
+  <h1>Edit User: <?=htmlspecialchars($user['email'])?></h1>
+  <form method="post" class="edit-form">
+    <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
+    <input type="hidden" name="user_id" value="<?=intval($user['id'])?>">
+    <label>
+      First Name
+      <input type="text" name="first_name" value="<?=htmlspecialchars($user['first_name'])?>">
+    </label>
+    <label>
+      Last Name
+      <input type="text" name="last_name" value="<?=htmlspecialchars($user['last_name'])?>">
+    </label>
+    <label>
+      Role
+      <select name="role">
+        <option <?= $user['role']==='User' ? 'selected' : '' ?>>User</option>
+        <option <?= $user['role']==='Admin' ? 'selected' : '' ?>>Admin</option>
+      </select>
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" name="is_active" value="1" <?= $user['is_active'] ? 'checked' : '' ?>>
+      Active
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" name="send_reset" value="1">
+      Send password reset email
+    </label>
+    <button type="submit">Save Changes</button>
+  </form>
+  <p class="back-link"><a href="index.php">← Back to User Management</a></p>
 </div>
 </body>
 </html>

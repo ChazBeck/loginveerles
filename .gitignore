@@ -1,5 +1,9 @@
 # Environment configuration
 .env
+apps/auth/config.php
+
+# JWT Keys (NEVER commit private key!)
+apps/auth/jwt_private.pem
 
 # Vendor dependencies
 vendor/

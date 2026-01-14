@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/include/auth_include.php';
-auth_init();
-auth_logout();
+require __DIR__ . '/include/jwt_include.php';
+jwt_init();
+jwt_logout();
 header('Location: login.php');
 exit;

@@ -1,8 +1,8 @@
 <?php
-require __DIR__ . '/../auth/include/auth_include.php';
-auth_init();
-auth_require_login();
-$user = auth_get_user();
+require __DIR__ . '/../auth/include/jwt_include.php';
+jwt_init();
+jwt_require_login();
+$user = jwt_get_user();
 ?>
 <!doctype html>
 <html>
