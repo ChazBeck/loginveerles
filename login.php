@@ -1,9 +1,8 @@
 <?php
-require __DIR__ . '/include/auth_include.php';
+require __DIR__ . '/include/common_functions.php';
 
 use Firebase\JWT\JWT;
 
-auth_init();
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF check
@@ -11,13 +10,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!auth_verify_csrf($token)) {
         $error = 'Invalid form submission (CSRF)';
     } else {
-        $email = $_POST['email'] ?? '';
+        $email = trim($_POST['email'] ?? '');
         $pass = $_POST['password'] ?? '';
-        $remember = isset($_POST['remember']);
-        list($ok, $msg) = auth_login($email, $pass, $remember);
-        if ($ok) {
-            // Login successful - now issue JWT
-            $user = auth_get_user();
+        
+        // Validate credentials directly
+        $pdo = auth_db();
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :e LIMIT 1');
+        $stmt->execute([':e' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Check rate limiting (last 15 minutes, max 10 attempts)
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+        $checkAttempts = $pdo->prepare('SELECT COUNT(*) as c FROM login_attempts 
+                                        WHERE (user_email = :e OR ip = :ip) 
+                                        AND success = 0 
+                                        AND created_at > (NOW() - INTERVAL 15 MINUTE)');
+        $checkAttempts->execute([':e' => $email, ':ip' => $ip]);
+        $attemptRow = $checkAttempts->fetch(PDO::FETCH_ASSOC);
+        $failedAttempts = (int)($attemptRow['c'] ?? 0);
+        
+        if ($failedAttempts >= 10) {
+            $error = 'Too many failed attempts. Try again later.';
+        } elseif (!$user || !password_verify($pass, $user['password_hash'])) {
+            // Record failed attempt
+            $userId = $user['id'] ?? null;
+            $logAttempt = $pdo->prepare('INSERT INTO login_attempts (user_id, user_email, ip, success) 
+                                         VALUES (:uid, :e, :ip, 0)');
+            $logAttempt->execute([':uid' => $userId, ':e' => $email, ':ip' => $ip]);
+            $error = 'Invalid email or password';
+        } elseif (!$user['is_active']) {
+            $error = 'Your account has been disabled';
+        } else {
+            // Login successful - update last login and log attempt
+            $updateLogin = $pdo->prepare('UPDATE users SET last_login = NOW() WHERE id = :id');
+            $updateLogin->execute([':id' => $user['id']]);
+            
+            $logSuccess = $pdo->prepare('INSERT INTO login_attempts (user_id, user_email, ip, success) 
+                                         VALUES (:uid, :e, :ip, 1)');
+            $logSuccess->execute([':uid' => $user['id'], ':e' => $email, ':ip' => $ip]);
+            
+            // Generate JWT
             $jti = bin2hex(random_bytes(32)); // JWT ID for session tracking
             
             // Load private key for JWT signing
@@ -44,13 +76,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generate JWT
             $jwt = JWT::encode($payload, $privateKey, 'RS256');
             
-            // Update session record with JWT ID for revocation capability
+            // Store JWT ID in sessions table for revocation capability
             try {
-                $pdo = auth_db();
-                $stmt = $pdo->prepare('UPDATE sessions SET session_token = :jti WHERE user_id = :uid ORDER BY created_at DESC LIMIT 1');
-                $stmt->execute([':jti' => $jti, ':uid' => $user['id']]);
+                $insertSession = $pdo->prepare('INSERT INTO sessions (session_token, user_id, ip, user_agent, created_at) 
+                                                VALUES (:jti, :uid, :ip, :ua, NOW())');
+                $insertSession->execute([
+                    ':jti' => $jti, 
+                    ':uid' => $user['id'],
+                    ':ip' => $ip,
+                    ':ua' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+                ]);
             } catch (Exception $e) {
-                // Continue even if session update fails
+                // Continue even if session insert fails
             }
             
             // Set JWT cookie
@@ -83,8 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             header('Location: ' . $return);
             exit;
-        } else {
-            $error = $msg ?: 'Login failed';
         }
     }
 }

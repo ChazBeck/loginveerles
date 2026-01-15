@@ -38,16 +38,13 @@ return [
         'charset' => env('DB_CHARSET', 'utf8mb4'),
     ],
     
-    // Cookie and session settings
-    'cookie_name' => env('COOKIE_NAME', 'appsess'),
+    // JWT cookie settings
     'jwt_cookie_name' => env('JWT_COOKIE_NAME', 'sso_token'),
     'jwt_cookie_domain' => env('JWT_COOKIE_DOMAIN', 'localhost'),
+    'jwt_lifetime_minutes' => (int)env('JWT_LIFETIME_MINUTES', 60),
     'cookie_secure' => filter_var(env('COOKIE_SECURE', $is_https), FILTER_VALIDATE_BOOLEAN),
     'cookie_samesite' => env('COOKIE_SAMESITE', 'Lax'),
     'cookie_path' => env('COOKIE_PATH', '/'),
-    'session_lifetime_minutes' => (int)env('SESSION_LIFETIME_MINUTES', 30),
-    'jwt_lifetime_minutes' => (int)env('JWT_LIFETIME_MINUTES', 60),
-    'remember_days' => (int)env('REMEMBER_DAYS', 30),
     
     // Application base URL
     'base_url' => env('APP_BASE_URL', 'http://localhost/loginveerles'),

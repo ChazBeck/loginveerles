@@ -3,7 +3,7 @@
 // Usage: php send_test_email_cli.php [recipient]
 
 chdir(__DIR__);
-require __DIR__ . '/../include/auth_include.php';
+require __DIR__ . '/../include/common_functions.php';
 
 $to = $argv[1] ?? 'charlie@veerless.com';
 $subject = 'SMTP test from auth service';

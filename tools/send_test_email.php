@@ -3,7 +3,7 @@
 // Simple page to test SMTP settings via auth_smtp_send().
 // Place your SMTP settings in ../config.php (copy from config.sample.php).
 
-require __DIR__ . '/../include/auth_include.php';
+require __DIR__ . '/../include/common_functions.php';
 
 $result = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
