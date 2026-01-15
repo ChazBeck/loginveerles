@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: url('assets/images/waterfall-bg.jpg') center/cover fixed;
+      background: url('assets/images/v2osk-214954-unsplash.jpg') center/cover fixed;
       min-height: 100vh;
       display: flex;
       align-items: center;
