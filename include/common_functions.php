@@ -26,6 +26,16 @@ $pdo = null;
 function auth_db() {
     global $pdo, $config;
     if ($pdo) return $pdo;
+    
+    // Ensure config is loaded
+    if (!$config) {
+        if (file_exists(__DIR__ . '/../config.php')) {
+            $config = require __DIR__ . '/../config.php';
+        } else {
+            throw new Exception('Configuration file not found');
+        }
+    }
+    
     $db = $config['db'];
     $dsn = "mysql:host={$db['host']};dbname={$db['name']};charset={$db['charset']}";
     $pdo = new PDO($dsn, $db['user'], $db['pass'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);

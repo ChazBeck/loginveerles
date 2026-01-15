@@ -1,24 +1,26 @@
 <?php
 
 // Helper function to read environment variables
-function env($key, $default = null) {
-    static $env_loaded = false;
-    static $env_vars = [];
-    
-    if (!$env_loaded) {
-        $env_file = __DIR__ . '/.env';
-        if (file_exists($env_file)) {
-            $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $line) {
-                if (strpos(trim($line), '#') === 0) continue;
-                list($key_part, $value) = explode('=', $line, 2);
-                $env_vars[trim($key_part)] = trim($value);
+if (!function_exists('env')) {
+    function env($key, $default = null) {
+        static $env_loaded = false;
+        static $env_vars = [];
+        
+        if (!$env_loaded) {
+            $env_file = __DIR__ . '/.env';
+            if (file_exists($env_file)) {
+                $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                foreach ($lines as $line) {
+                    if (strpos(trim($line), '#') === 0) continue;
+                    list($key_part, $value) = explode('=', $line, 2);
+                    $env_vars[trim($key_part)] = trim($value);
+                }
             }
+            $env_loaded = true;
         }
-        $env_loaded = true;
+        
+        return isset($env_vars[$key]) ? $env_vars[$key] : $default;
     }
-    
-    return isset($env_vars[$key]) ? $env_vars[$key] : $default;
 }
 
 // Detect environment
