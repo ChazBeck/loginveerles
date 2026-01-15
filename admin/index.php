@@ -162,7 +162,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </style>
 </head>
 <body>
-<?php include __DIR__ . '/../../_header.php'; ?>
 <div class="admin-container">
   <h1>User Management</h1>
   

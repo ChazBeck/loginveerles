@@ -200,7 +200,6 @@ if (!$user) { header('Location: index.php'); exit; }
   </style>
 </head>
 <body>
-<?php include __DIR__ . '/../../_header.php'; ?>
 <div class="admin-container">
   <h1>Edit User: <?=htmlspecialchars($user['email'])?></h1>
   <form method="post" class="edit-form">
