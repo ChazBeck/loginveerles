@@ -73,34 +73,42 @@ try {
 
 echo "<h3>Step 5: Check Password Reset Tokens Table</h3>";
 try {
-    $stmt = $pdo->query('SELECT COUNT(*) as c FROM password_resets WHERE email = "' . $testEmail . '"');
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $count = $row['c'] ?? 0;
+    // Get user_id first
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = :e LIMIT 1');
+    $stmt->execute([':e' => $testEmail]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($count > 0) {
-        echo "<span class='ok'>✓ Password reset token created ($count found)</span><br>";
+    if ($user) {
+        $stmt = $pdo->prepare('SELECT COUNT(*) as c FROM password_resets WHERE user_id = :uid');
+        $stmt->execute([':uid' => $user['id']]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $count = $row['c'] ?? 0;
         
-        // Show the latest token
-        $stmt = $pdo->prepare('SELECT token, expires_at, created_at FROM password_resets WHERE email = :e ORDER BY created_at DESC LIMIT 1');
-        $stmt->execute([':e' => $testEmail]);
-        $reset = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($reset) {
-            echo "<pre>";
-            echo "Token: " . substr($reset['token'], 0, 20) . "...\n";
-            echo "Created: {$reset['created_at']}\n";
-            echo "Expires: {$reset['expires_at']}\n";
-            echo "</pre>";
+        if ($count > 0) {
+            echo "<span class='ok'>✓ Password reset token created ($count found)</span><br>";
             
-            // Generate manual reset link
-            $baseUrl = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'];
-            $resetUrl = $baseUrl . '/password_reset_form.php?token=' . urlencode($reset['token']);
+            // Show the latest token
+            $stmt = $pdo->prepare('SELECT reset_token, expires_at, created_at FROM password_resets WHERE user_id = :uid ORDER BY created_at DESC LIMIT 1');
+            $stmt->execute([':uid' => $user['id']]);
+            $reset = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            echo "<p><strong>Manual Password Reset Link:</strong></p>";
-            echo "<a href='" . htmlspecialchars($resetUrl) . "' target='_blank'>Click here to reset password</a><br>";
+            if ($reset) {
+                echo "<pre>";
+                echo "Token: " . substr($reset['reset_token'], 0, 20) . "...\n";
+                echo "Created: {$reset['created_at']}\n";
+                echo "Expires: {$reset['expires_at']}\n";
+                echo "</pre>";
+                
+                // Generate manual reset link
+                $baseUrl = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'];
+                $resetUrl = $baseUrl . '/password_reset_form.php?token=' . urlencode($reset['reset_token']);
+                
+                echo "<p><strong>Manual Password Reset Link:</strong></p>";
+                echo "<a href='" . htmlspecialchars($resetUrl) . "' target='_blank'>Click here to reset password</a><br>";
+            }
+        } else {
+            echo "<span class='err'>❌ No password reset token found</span><br>";
         }
-    } else {
-        echo "<span class='err'>❌ No password reset token found</span><br>";
     }
 } catch (Exception $e) {
     echo "<span class='err'>❌ Error checking tokens: " . htmlspecialchars($e->getMessage()) . "</span><br>";
