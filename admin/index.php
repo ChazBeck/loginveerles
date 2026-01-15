@@ -194,9 +194,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <option>Admin</option>
       </select>
     </label>
+    <label>
+      Password (optional)
+      <input type="text" name="password" placeholder="Leave blank to require password reset">
+      <small style="display: block; color: #6c757d; margin-top: 4px;">Set a password to share directly, or leave blank to send reset email</small>
+    </label>
     <label style="display: flex; align-items: center;">
       <input type="checkbox" name="send_reset" checked style="width: auto; margin-right: 8px;">
-      Send password setup email
+      Send password setup email (only if password is blank)
     </label>
     <button type="submit">Add User</button>
   </form>

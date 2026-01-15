@@ -35,8 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $upd = $pdo->prepare('UPDATE users SET first_name = :fn, last_name = :ln, role = :role, is_active = :active WHERE id = :id');
-    $upd->execute([':fn' => $first, ':ln' => $last, ':role' => $role, ':active' => $is_active, ':id' => $id]);
+    // Update password if provided
+    $newPassword = trim($_POST['new_password'] ?? '');
+    if ($newPassword !== '') {
+        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $upd = $pdo->prepare('UPDATE users SET first_name = :fn, last_name = :ln, role = :role, is_active = :active, password_hash = :ph WHERE id = :id');
+        $upd->execute([':fn' => $first, ':ln' => $last, ':role' => $role, ':active' => $is_active, ':ph' => $passwordHash, ':id' => $id]);
+    } else {
+        $upd = $pdo->prepare('UPDATE users SET first_name = :fn, last_name = :ln, role = :role, is_active = :active WHERE id = :id');
+        $upd->execute([':fn' => $first, ':ln' => $last, ':role' => $role, ':active' => $is_active, ':id' => $id]);
+    }
+    
     if (!$is_active) {
         $del = $pdo->prepare('DELETE FROM sessions WHERE user_id = :id');
         $del->execute([':id' => $id]);
@@ -215,6 +224,11 @@ if (!$user) { header('Location: index.php'); exit; }
     <label class="checkbox-label">
       <input type="checkbox" name="is_active" value="1" <?= $user['is_active'] ? 'checked' : '' ?>>
       Active
+    </label>
+    <label>
+      New Password (optional)
+      <input type="text" name="new_password" placeholder="Leave blank to keep current password">
+      <small style="display: block; color: #6c757d; margin-top: 4px;">Enter new password to reset, or leave blank to keep unchanged</small>
     </label>
     <label class="checkbox-label">
       <input type="checkbox" name="send_reset" value="1">
