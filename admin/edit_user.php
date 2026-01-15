@@ -88,7 +88,7 @@ if (!$user) { header('Location: index.php'); exit; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2000') center/cover fixed;
+      background: url('../assets/images/waterfall-bg.jpg') center/cover fixed;
       min-height: 100vh;
     }
     .header {
