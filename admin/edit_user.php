@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = $s->fetch(PDO::FETCH_ASSOC);
         if ($row) auth_request_password_reset($row['email']);
     }
-    header('Location: index.php'); exit;
+    header('Location: index.php?success=User updated successfully'); exit;
 }
 
 $id = intval($_GET['user_id'] ?? 0);

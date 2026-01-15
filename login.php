@@ -1,9 +1,27 @@
 <?php
-require __DIR__ . '/include/common_functions.php';
+require __DIR__ . '/include/jwt_include.php';
 
 use Firebase\JWT\JWT;
 
+// Make config global accessible
+global $config;
+
+// Check if user is already logged in
+if (jwt_init() && jwt_is_logged_in()) {
+    $user = jwt_get_user();
+    // Redirect to appropriate page
+    if (isset($_GET['return_to']) && $_GET['return_to']) {
+        header('Location: ' . $_GET['return_to']);
+    } elseif (strcasecmp($user['role'] ?? '', 'admin') === 0) {
+        header('Location: admin/index.php');
+    } else {
+        header('Location: index.php');
+    }
+    exit;
+}
+
 $error = null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF check
     $token = $_POST['csrf_token'] ?? '';
@@ -15,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Validate credentials directly
         $pdo = auth_db();
-        $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :e LIMIT 1');
+        $stmt = $pdo->prepare('SELECT id, email, password_hash, first_name, last_name, role, is_active FROM users WHERE email = :e LIMIT 1');
         $stmt->execute([':e' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -78,15 +96,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Store JWT ID in sessions table for revocation capability
             try {
-                $insertSession = $pdo->prepare('INSERT INTO sessions (session_token, user_id, ip, user_agent, created_at) 
-                                                VALUES (:jti, :uid, :ip, :ua, NOW())');
+                $insertSession = $pdo->prepare('INSERT INTO sessions (user_id, jti, created_at, expires_at) 
+                                                VALUES (:uid, :jti, FROM_UNIXTIME(:iat), FROM_UNIXTIME(:exp))');
                 $insertSession->execute([
-                    ':jti' => $jti, 
                     ':uid' => $user['id'],
-                    ':ip' => $ip,
-                    ':ua' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+                    ':jti' => $jti,
+                    ':iat' => $issuedAt,
+                    ':exp' => $expiresAt
                 ]);
             } catch (Exception $e) {
+                error_log("Session insert failed: " . $e->getMessage());
                 // Continue even if session insert fails
             }
             
@@ -223,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="auth-form-container">
   <h1>Login</h1>
   <?php if ($error): ?><div class="error"><?=htmlspecialchars($error)?></div><?php endif; ?>
-  <form method="post">
+  <form method="post" action="login.php<?php echo isset($_GET['return_to']) ? '?return_to=' . urlencode($_GET['return_to']) : ''; ?>">
     <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
     <label>Email
       <input type="email" name="email" autocomplete="email" required>

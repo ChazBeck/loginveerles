@@ -165,6 +165,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include __DIR__ . '/../../_header.php'; ?>
 <div class="admin-container">
   <h1>User Management</h1>
+  
+  <?php if (isset($_GET['success'])): ?>
+    <div style="background: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+      ✓ <?=htmlspecialchars($_GET['success'])?>
+    </div>
+  <?php endif; ?>
 
   <h2>Add New User</h2>
   <form method="post" action="add_user.php" class="admin-form">

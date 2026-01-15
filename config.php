@@ -42,7 +42,7 @@ return [
     
     // JWT cookie settings
     'jwt_cookie_name' => env('JWT_COOKIE_NAME', 'sso_token'),
-    'jwt_cookie_domain' => env('JWT_COOKIE_DOMAIN', 'localhost'),
+    'jwt_cookie_domain' => env('JWT_COOKIE_DOMAIN', ''), // Empty for localhost, set domain for production
     'jwt_lifetime_minutes' => (int)env('JWT_LIFETIME_MINUTES', 60),
     'cookie_secure' => filter_var(env('COOKIE_SECURE', $is_https), FILTER_VALIDATE_BOOLEAN),
     'cookie_samesite' => env('COOKIE_SAMESITE', 'Lax'),

@@ -35,10 +35,10 @@ function jwt_init() {
         // Check if JWT has been revoked (optional)
         if (isset($decoded->jti)) {
             $pdo = auth_db();
-            $stmt = $pdo->prepare('SELECT * FROM sessions WHERE session_token = :jti AND revoked_at IS NULL LIMIT 1');
+            $stmt = $pdo->prepare('SELECT * FROM sessions WHERE jti = :jti AND revoked_at IS NULL LIMIT 1');
             $stmt->execute([':jti' => $decoded->jti]);
             if (!$stmt->fetch()) {
-                // JWT has been revoked
+                // JWT has been revoked or not found
                 jwt_clear_cookie();
                 return false;
             }
@@ -117,14 +117,14 @@ function jwt_clear_cookie() {
 function jwt_logout() {
     global $currentUser;
     
-    // Delete session from database if we have the JWT ID
+    // Revoke session in database if we have the JWT ID
     if ($currentUser && isset($currentUser['jti'])) {
         try {
-            $pdo = jwt_db();
-            $stmt = $pdo->prepare('DELETE FROM sessions WHERE session_token = :jti');
+            $pdo = auth_db();
+            $stmt = $pdo->prepare('UPDATE sessions SET revoked_at = NOW() WHERE jti = :jti');
             $stmt->execute([':jti' => $currentUser['jti']]);
         } catch (Exception $e) {
-            // Continue with logout even if DB deletion fails
+            // Continue with logout even if DB update fails
         }
     }
     
