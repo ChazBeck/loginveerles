@@ -129,7 +129,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Tools</title>
-  <link rel="stylesheet" href="../assets/auth-forms.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2000') center/cover fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-form-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      margin: 20px;
+    }
+    .auth-form-container h1 {
+      color: #043546;
+      margin-top: 0;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .auth-form-container .error {
+      background: #fee;
+      color: #c33;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #fcc;
+    }
+    .auth-form-container label {
+      display: block;
+      margin-bottom: 20px;
+      color: #043546;
+      font-weight: 500;
+    }
+    .auth-form-container input[type="email"],
+    .auth-form-container input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    .auth-form-container input[type="email"]:focus,
+    .auth-form-container input[type="password"]:focus {
+      outline: none;
+      border-color: #E58325;
+    }
+    .auth-form-container .checkbox-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .auth-form-container input[type="checkbox"] {
+      margin-right: 8px;
+      width: auto;
+    }
+    .auth-form-container button[type="submit"] {
+      width: 100%;
+      background: #E58325;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .auth-form-container button[type="submit"]:hover {
+      background: #d67520;
+    }
+    .auth-form-container .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+    .auth-form-container .form-footer a {
+      color: #E58325;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
 <div class="auth-form-container">
