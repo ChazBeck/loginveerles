@@ -74,10 +74,8 @@ function jwt_is_logged_in() {
 function jwt_require_login($redirect = true) {
     if (!jwt_get_user()) {
         if ($redirect) {
-            global $config;
-            $baseUrl = rtrim($config['base_url'] ?? '', '/');
             $returnTo = urlencode($_SERVER['REQUEST_URI']);
-            header('Location: ' . $baseUrl . '/login.php?return_to=' . $returnTo);
+            header('Location: /apps/auth/login.php?return_to=' . $returnTo);
             exit;
         }
         return false;

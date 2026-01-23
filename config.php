@@ -49,7 +49,7 @@ return [
     'cookie_path' => env('COOKIE_PATH', '/'),
     
     // Application base URL
-    'base_url' => env('APP_BASE_URL', 'http://localhost/loginveerles'),
+    'base_url' => env('APP_BASE_URL', 'https://tools.veerl.es/apps/auth'),
     
     // Email settings
     'mail_from' => env('MAIL_FROM', 'no-reply@example.com'),
