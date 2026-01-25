@@ -5,8 +5,8 @@
 
 window.sharedHeaderConfig = {
     // Logo configuration
-    logoUrl: '/apps/auth/assets/logo.png', // Update to your actual logo path
-    logoText: 'Veerl.es Tools',
+    logoUrl: '/apps/auth/assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png',
+    logoText: '',
     logoLink: '/apps/',
     
     // Authentication URLs

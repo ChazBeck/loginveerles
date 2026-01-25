@@ -149,6 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Tools</title>
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/veerless-logo-mark-sunrise-rgb-1920px-w-144ppi.png">
+  
   <!-- Shared Header CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
   
@@ -253,8 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="header-container">
         <div class="header-logo">
             <a href="/apps/">
-                <img src="/apps/auth/assets/logo.png" alt="Logo" class="logo-image" style="height: 40px;">
-                <span class="logo-text">Veerl.es Tools</span>
+                <img src="/apps/auth/assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
             </a>
         </div>
         <div class="header-right">

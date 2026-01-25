@@ -16,8 +16,7 @@
     <div class="header-container">
         <div class="header-logo">
             <a href="/apps/" id="logo-link">
-                <img src="/apps/auth/assets/logo.png" alt="Logo" id="header-logo-img" class="logo-image">
-                <span class="logo-text" id="logo-text">Veerl.es Tools</span>
+                <img src="/apps/auth/assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" id="header-logo-img" class="logo-image" style="height: 50px;">
             </a>
         </div>
         <div class="header-right">
