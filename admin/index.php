@@ -6,60 +6,32 @@ jwt_require_admin();
 $pdo = auth_db();
 $stmt = $pdo->query('SELECT id, email, first_name, last_name, role, is_active, created_at, last_login FROM users ORDER BY email');
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get user data for header
+$user = jwt_get_user();
+$userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+$userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
+    'name' => $userName,
+    'background' => '667eea',
+    'color' => 'fff',
+    'size' => '128',
+    'bold' => 'true'
+]);
 ?>
-<header class="header">
-  <a href="../index.php" class="logo">Apps Auth</a>
-  <nav>
-    <?php if (jwt_is_admin()): ?>
-      <a href="<?=htmlspecialchars($_SERVER['PHP_SELF'])?>">ADMIN</a>
-    <?php endif; ?>
-    <a href="../logout.php">LOG OUT</a>
-  </nav>
-</header>
 <!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin - User Management</title>
+  <link rel="icon" type="image/png" href="../assets/images/veerless-logo-mark-sunrise-rgb-1920px-w-144ppi.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
   <style>
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background: url('../assets/images/v2osk-214954-unsplash.jpg') center/cover fixed;
       min-height: 100vh;
-    }
-    .header {
-      background: rgba(4, 53, 70, 0.95);
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .header .logo {
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .header nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .header nav a {
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    .header nav a:hover {
-      background: rgba(229, 131, 37, 0.2);
-    }
-    .header nav a.active {
-      background: #E58325;
     }
     .admin-container {
       max-width: 1200px;
@@ -162,6 +134,26 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </style>
 </head>
 <body>
+<!-- Shared Header with User Avatar -->
+<header class="shared-header">
+    <div class="header-container">
+        <div class="header-logo">
+            <a href="/apps/">
+                <img src="../assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="user-avatar" style="display: flex;">
+                <img src="<?= htmlspecialchars($userAvatar) ?>" alt="User Avatar" class="avatar-image">
+                <span class="user-name"><?= htmlspecialchars($userName) ?></span>
+            </div>
+            <button class="auth-button" onclick="window.location.href='../logout.php'">
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+</header>
+
 <div class="admin-container">
   <h1>User Management</h1>
   
