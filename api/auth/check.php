@@ -30,6 +30,26 @@ jwt_init();
 $user = jwt_get_user();
 
 if ($user && jwt_is_logged_in()) {
+    // Get full user data including avatar from database
+    $pdo = auth_db();
+    $stmt = $pdo->prepare('SELECT avatar_url FROM users WHERE id = :id LIMIT 1');
+    $stmt->execute([':id' => $user['id']]);
+    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Determine avatar URL - use custom if available, otherwise generate
+    $avatarUrl = '';
+    if ($userData && !empty($userData['avatar_url'])) {
+        $avatarUrl = '/apps/auth/' . $userData['avatar_url'];
+    } else {
+        $avatarUrl = 'https://ui-avatars.com/api/?' . http_build_query([
+            'name' => trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')),
+            'background' => '667eea',
+            'color' => 'fff',
+            'size' => '128',
+            'bold' => 'true'
+        ]);
+    }
+    
     // User is authenticated - return user data
     $response = [
         'authenticated' => true,
@@ -40,14 +60,7 @@ if ($user && jwt_is_logged_in()) {
         'last_name' => $user['last_name'] ?? '',
         'role' => $user['role'] ?? 'User',
         'isAdmin' => jwt_is_admin(),
-        // Generate avatar URL using UI Avatars service
-        'avatar' => 'https://ui-avatars.com/api/?' . http_build_query([
-            'name' => trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')),
-            'background' => '667eea',
-            'color' => 'fff',
-            'size' => '128',
-            'bold' => 'true'
-        ])
+        'avatar' => $avatarUrl
     ];
 } else {
     // User is not authenticated

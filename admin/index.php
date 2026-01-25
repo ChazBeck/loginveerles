@@ -4,19 +4,29 @@ jwt_init();
 jwt_require_admin();
 
 $pdo = auth_db();
-$stmt = $pdo->query('SELECT id, email, first_name, last_name, role, is_active, created_at, last_login FROM users ORDER BY email');
+$stmt = $pdo->query('SELECT id, email, first_name, last_name, role, is_active, created_at, last_login, avatar_url FROM users ORDER BY email');
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get user data for header
+// Get user data for header including custom avatar
 $user = jwt_get_user();
 $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-$userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
-    'name' => $userName,
-    'background' => '667eea',
-    'color' => 'fff',
-    'size' => '128',
-    'bold' => 'true'
-]);
+
+// Get custom avatar from database
+$avatarStmt = $pdo->prepare('SELECT avatar_url FROM users WHERE id = :id LIMIT 1');
+$avatarStmt->execute([':id' => $user['id']]);
+$avatarData = $avatarStmt->fetch(PDO::FETCH_ASSOC);
+
+if ($avatarData && !empty($avatarData['avatar_url'])) {
+    $userAvatar = '../' . $avatarData['avatar_url'];
+} else {
+    $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
+        'name' => $userName,
+        'background' => '667eea',
+        'color' => 'fff',
+        'size' => '128',
+        'bold' => 'true'
+    ]);
+}
 ?>
 <!doctype html>
 <html>
@@ -221,7 +231,9 @@ $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
         <td><?=htmlspecialchars($u['last_login'] ?? 'Never')?></td>
         <td>
           <a href="edit_user.php?user_id=<?=intval($u['id'])?>">Edit</a>
-          &nbsp;
+          &nbsp;|&nbsp;
+          <a href="upload_avatar.php?user_id=<?=intval($u['id'])?>">Avatar</a>
+          &nbsp;|&nbsp;
           <form method="post" action="toggle_user.php" style="display:inline">
             <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
             <input type="hidden" name="user_id" value="<?=intval($u['id'])?>">

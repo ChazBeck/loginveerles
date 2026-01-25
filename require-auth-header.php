@@ -15,16 +15,27 @@ if (!function_exists('jwt_init')) {
 // Require login - redirect to login page if not authenticated
 jwt_require_login();
 
-// Get user data
+// Get user data including custom avatar
 $user = jwt_get_user();
 $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-$userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
-    'name' => $userName,
-    'background' => '667eea',
-    'color' => 'fff',
-    'size' => '128',
-    'bold' => 'true'
-]);
+
+// Get custom avatar from database
+$pdo = auth_db();
+$avatarStmt = $pdo->prepare('SELECT avatar_url FROM users WHERE id = :id LIMIT 1');
+$avatarStmt->execute([':id' => $user['id']]);
+$avatarData = $avatarStmt->fetch(PDO::FETCH_ASSOC);
+
+if ($avatarData && !empty($avatarData['avatar_url'])) {
+    $userAvatar = '/apps/auth/' . $avatarData['avatar_url'];
+} else {
+    $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
+        'name' => $userName,
+        'background' => '667eea',
+        'color' => 'fff',
+        'size' => '128',
+        'bold' => 'true'
+    ]);
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head>

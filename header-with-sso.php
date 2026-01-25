@@ -19,13 +19,24 @@ $isLoggedIn = jwt_is_logged_in();
 // Prepare user display data
 if ($isLoggedIn) {
     $userName = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-    $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
-        'name' => $userName,
-        'background' => '667eea',
-        'color' => 'fff',
-        'size' => '128',
-        'bold' => 'true'
-    ]);
+    
+    // Get custom avatar from database
+    $pdo = auth_db();
+    $avatarStmt = $pdo->prepare('SELECT avatar_url FROM users WHERE id = :id LIMIT 1');
+    $avatarStmt->execute([':id' => $user['id']]);
+    $avatarData = $avatarStmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($avatarData && !empty($avatarData['avatar_url'])) {
+        $userAvatar = '/apps/auth/' . $avatarData['avatar_url'];
+    } else {
+        $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
+            'name' => $userName,
+            'background' => '667eea',
+            'color' => 'fff',
+            'size' => '128',
+            'bold' => 'true'
+        ]);
+    }
 }
 ?>
 <!-- Shared Header CSS -->
