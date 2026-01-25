@@ -87,10 +87,10 @@ $user = jwt_get_user();
         .error { color: #721c24; font-weight: 600; }
     </style>
     
-    <!-- Shared Header CSS - Update path based on where you cloned the repo -->
-    <link rel="stylesheet" href="/sharedheader/header.css">
-    <!-- Or use CDN: -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css"> -->
+    <!-- Shared Header CSS - Using CDN (or install locally with ./install-sharedheader.sh) -->
+    <!-- <link rel="stylesheet" href="/sharedheader/header.css"> -->
+    <!-- Using CDN: -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
 </head>
 <body>
     <!-- Shared Header HTML -->
@@ -212,10 +212,10 @@ $user = jwt_get_user();
     <!-- Configure Shared Header (MUST come before header.js) -->
     <script src="/apps/auth/sharedheader-config.js"></script>
     
-    <!-- Include Shared Header JavaScript -->
-    <script src="/sharedheader/header.js"></script>
-    <!-- Or use CDN: -->
-    <!-- <script src="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.js"></script> -->
+    <!-- Include Shared Header JavaScript - Using CDN (or install locally) -->
+    <!-- <script src="/sharedheader/header.js"></script> -->
+    <!-- Using CDN: -->
+    <script src="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.js"></script>
 
     <!-- Test Functions -->
     <script>

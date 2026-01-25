@@ -7,9 +7,9 @@
 -->
 
 <!-- Shared Header CSS -->
-<link rel="stylesheet" href="/sharedheader/header.css">
-<!-- Or use the GitHub CDN: -->
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader/header.css"> -->
+<!-- Local: <link rel="stylesheet" href="/sharedheader/header.css"> -->
+<!-- Using GitHub CDN: -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
 
 <!-- Shared Header HTML -->
 <header id="shared-header" class="shared-header">
@@ -36,6 +36,6 @@
 <script src="/apps/auth/sharedheader-config.js"></script>
 
 <!-- Include Shared Header JavaScript -->
-<script src="/sharedheader/header.js"></script>
-<!-- Or use the GitHub CDN: -->
-<!-- <script src="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader/header.js"></script> -->
+<!-- Local: <script src="/sharedheader/header.js"></script> -->
+<!-- Using GitHub CDN: -->
+<script src="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.js"></script>
