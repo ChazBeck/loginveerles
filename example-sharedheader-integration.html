@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veerl.es Tools</title>
+    
+    <!-- Include Shared Header CSS -->
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/ChazBeck/sharedheader/main/header.css">
+    <!-- Or if you've copied the files locally: -->
+    <!-- <link rel="stylesheet" href="/sharedheader/header.css"> -->
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Shared Header HTML -->
+    <header id="shared-header" class="shared-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <a href="/" id="logo-link">
+                    <img src="/apps/auth/assets/logo.png" alt="Logo" id="header-logo-img" class="logo-image">
+                    <span class="logo-text" id="logo-text">Veerl.es Tools</span>
+                </a>
+            </div>
+            <div class="header-right">
+                <div class="user-avatar" id="user-avatar" style="display: none;">
+                    <img src="" alt="User Avatar" id="avatar-img" class="avatar-image">
+                    <span class="user-name" id="user-name"></span>
+                </div>
+                <button class="auth-button" id="auth-button">
+                    <span id="auth-button-text">Login</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Your page content -->
+    <div class="content">
+        <h1>Welcome to Veerl.es Tools</h1>
+        <p>Select an application below:</p>
+        <!-- Your app links here -->
+    </div>
+
+    <!-- Configure Shared Header (must be before header.js) -->
+    <script src="/apps/auth/sharedheader-config.js"></script>
+    
+    <!-- Include Shared Header JavaScript -->
+    <script src="https://raw.githubusercontent.com/ChazBeck/sharedheader/main/header.js"></script>
+    <!-- Or if you've copied the files locally: -->
+    <!-- <script src="/sharedheader/header.js"></script> -->
+</body>
+</html>

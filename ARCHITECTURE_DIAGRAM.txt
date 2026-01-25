@@ -1,0 +1,195 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SHARED HEADER AUTHENTICATION FLOW                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────┐
+│   User       │
+│   Visits     │
+│   Your App   │
+└──────┬───────┘
+       │
+       │  1. Page loads with shared header HTML/CSS/JS
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  Shared Header JavaScript (header.js)                            │
+│                                                                   │
+│  • Initializes on page load                                      │
+│  • Reads configuration from sharedheader-config.js               │
+│  • Automatically calls SSO check endpoint                        │
+└──────────────────┬───────────────────────────────────────────────┘
+                   │
+                   │  2. JavaScript makes fetch() call
+                   │     with credentials (cookies)
+                   │
+                   ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  /api/auth/check.php (SSO Endpoint)                              │
+│                                                                   │
+│  • Receives request with JWT cookie                              │
+│  • Calls jwt_init() to validate token                            │
+│  • Gets user data from JWT                                       │
+│  • Returns JSON response                                         │
+└──────────────────┬───────────────────────────────────────────────┘
+                   │
+                   │  3. Returns JSON response
+                   │
+      ┌────────────┴────────────┐
+      │                         │
+      ▼                         ▼
+┌─────────────────┐    ┌──────────────────────┐
+│  Not Logged In  │    │    Logged In         │
+│                 │    │                      │
+│  Response:      │    │  Response:           │
+│  {              │    │  {                   │
+│    "authenti-   │    │    "authenticated":  │
+│     cated":     │    │     true,            │
+│     false       │    │    "name": "John",   │
+│  }              │    │    "email": "...",   │
+└─────────┬───────┘    │    "avatar": "..."   │
+          │            │  }                   │
+          │            └──────────┬───────────┘
+          │                       │
+          │  4. JavaScript updates UI based on response
+          │                       │
+          ▼                       ▼
+┌─────────────────┐    ┌──────────────────────┐
+│  Header shows:  │    │  Header shows:       │
+│                 │    │                      │
+│  ┌────────────┐ │    │  ┌─────┐ John Doe   │
+│  │   LOGIN    │ │    │  │ JD  │ LOGOUT     │
+│  └────────────┘ │    │  └─────┘            │
+│                 │    │   Avatar  Name       │
+└─────────────────┘    └──────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          USER INTERACTIONS                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+When user clicks LOGIN button:
+───────────────────────────────
+  User clicks → JavaScript onLogin() → Redirect to /apps/auth/login.php
+
+
+When user clicks LOGOUT button:
+────────────────────────────────
+  User clicks → JavaScript onLogout() → Fetch /apps/auth/logout.php
+              → Clear JWT cookie → Redirect to home
+
+
+When user clicks AVATAR:
+─────────────────────────
+  User clicks → JavaScript onAvatarClick() → Custom action
+              → Could show menu, profile, settings, etc.
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          KEY COMPONENTS                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Frontend (Client-Side):
+─────────────────────────
+  • header.html       - Header HTML structure
+  • header.css        - Styling
+  • header.js         - Core JavaScript logic
+  • sharedheader-config.js - Your custom configuration
+
+Backend (Server-Side):
+────────────────────────
+  • /api/auth/check.php    - SSO endpoint (returns user data)
+  • /apps/auth/login.php   - Login page
+  • /apps/auth/logout.php  - Logout endpoint
+  • jwt_include.php        - JWT authentication library
+
+Authentication:
+────────────────
+  • JWT token stored in httpOnly cookie
+  • Cookie name: sso_token (configurable)
+  • Validated on every request
+  • Shared across all your apps on same domain
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        AVATAR GENERATION                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Default: UI Avatars Service
+─────────────────────────────
+  User: John Doe
+    ↓
+  Generate URL: https://ui-avatars.com/api/?name=John+Doe&...
+    ↓
+  Returns image: ┌─────┐
+                 │ JD  │  (Purple background, white text)
+                 └─────┘
+
+Can be customized to:
+  • Gravatar (based on email)
+  • Custom uploaded avatars
+  • Different colors/styles
+  • Your own avatar generation service
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        FILE LOCATIONS                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Your Project Structure:
+────────────────────────
+/Applications/XAMPP/xamppfiles/htdocs/loginveerles/
+│
+├── sharedheader/                    ← Clone from GitHub
+│   ├── header.html
+│   ├── header.css
+│   ├── header.js
+│   └── images/
+│
+├── api/
+│   └── auth/
+│       └── check.php                ← SSO endpoint (created)
+│
+├── sharedheader-config.js           ← Your config (created)
+├── sharedheader-include.php         ← PHP template (created)
+│
+└── test_sharedheader.php            ← Test page (created)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     INTEGRATION EXAMPLE                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Your Application Page:
+───────────────────────
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/sharedheader/header.css">
+</head>
+<body>
+    <!-- Include shared header HTML -->
+    <header id="shared-header" class="shared-header">
+        <!-- ... header structure ... -->
+    </header>
+
+    <!-- Your app content -->
+    <div class="content">
+        <h1>My Application</h1>
+    </div>
+
+    <!-- Configure and initialize -->
+    <script src="/apps/auth/sharedheader-config.js"></script>
+    <script src="/sharedheader/header.js"></script>
+</body>
+</html>
+
+
+Result:
+────────
+┌───────────────────────────────────────────────────────────────┐
+│  [Logo] Veerl.es Tools                    [JD] John  [LOGOUT] │
+└───────────────────────────────────────────────────────────────┘
+│                                                               │
+│  My Application Content                                       │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
