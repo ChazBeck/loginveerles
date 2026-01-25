@@ -7,9 +7,8 @@
 
 // Initialize authentication if not already done
 if (!function_exists('jwt_init')) {
-    require_once __DIR__ . '/config.php';
-    require_once __DIR__ . '/include/jwt_include.php';
     $config = require __DIR__ . '/config.php';
+    require_once __DIR__ . '/include/jwt_include.php';
     jwt_init();
 }
 
