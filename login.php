@@ -256,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="header-container">
         <div class="header-logo">
             <a href="/apps/">
-                <img src="/apps/auth/assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
+                <img src="assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
             </a>
         </div>
         <div class="header-right">
@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="" alt="User Avatar" class="avatar-image">
                 <span class="user-name"></span>
             </div>
-            <button class="auth-button" onclick="window.location.href='/apps/auth/login.php'">
+            <button class="auth-button" onclick="window.location.href='login.php'">
                 <span>Login</span>
             </button>
         </div>
