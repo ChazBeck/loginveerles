@@ -141,6 +141,36 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
     .users-table button:hover {
       background: #5a6268;
     }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #ddd;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #6c757d;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      color: #043546;
+    }
+    .tab.active {
+      color: #E58325;
+      border-bottom-color: #E58325;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -173,7 +203,15 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
     </div>
   <?php endif; ?>
 
-  <h2>Add New User</h2>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('active')">Active Users (<?= count(array_filter($users, fn($u) => $u['is_active'])) ?>)</button>
+    <button class="tab" onclick="showTab('disabled')">Disabled Users (<?= count(array_filter($users, fn($u) => !$u['is_active'])) ?>)</button>
+  </div>
+
+  <!-- Active Users Tab -->
+  <div id="active-tab" class="tab-content active">
+    <h2>Add New User</h2>
   <form method="post" action="add_user.php" class="admin-form">
     <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
     <label>
@@ -207,7 +245,7 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
     <button type="submit">Add User</button>
   </form>
 
-  <h2>Existing Users</h2>
+  <h2>Active Users</h2>
   <table class="users-table">
     <thead>
       <tr>
@@ -215,19 +253,18 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
         <th>First Name</th>
         <th>Last Name</th>
         <th>Role</th>
-        <th>Active</th>
         <th>Last Login</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <?php foreach ($users as $u): ?>
+        <?php if (!$u['is_active']) continue; ?>
       <tr>
         <td><?=htmlspecialchars($u['email'])?></td>
         <td><?=htmlspecialchars($u['first_name'] ?? '')?></td>
         <td><?=htmlspecialchars($u['last_name'] ?? '')?></td>
         <td><?=htmlspecialchars($u['role'])?></td>
-        <td><?= $u['is_active'] ? '✓ Yes' : '✗ No' ?></td>
         <td><?=htmlspecialchars($u['last_login'] ?? 'Never')?></td>
         <td>
           <a href="edit_user.php?user_id=<?=intval($u['id'])?>">Edit</a>
@@ -237,14 +274,72 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
           <form method="post" action="toggle_user.php" style="display:inline">
             <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
             <input type="hidden" name="user_id" value="<?=intval($u['id'])?>">
-            <input type="hidden" name="action" value="<?= $u['is_active'] ? 'disable' : 'enable' ?>">
-            <button type="submit"><?= $u['is_active'] ? 'Disable' : 'Enable' ?></button>
+            <input type="hidden" name="action" value="disable">
+            <button type="submit">Disable</button>
           </form>
         </td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
+  </div>
+
+  <!-- Disabled Users Tab -->
+  <div id="disabled-tab" class="tab-content">
+  <h2>Disabled Users</h2>
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Role</th>
+        <th>Last Login</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($users as $u): ?>
+        <?php if ($u['is_active']) continue; ?>
+      <tr>
+        <td><?=htmlspecialchars($u['email'])?></td>
+        <td><?=htmlspecialchars($u['first_name'] ?? '')?></td>
+        <td><?=htmlspecialchars($u['last_name'] ?? '')?></td>
+        <td><?=htmlspecialchars($u['role'])?></td>
+        <td><?=htmlspecialchars($u['last_login'] ?? 'Never')?></td>
+        <td>
+          <a href="edit_user.php?user_id=<?=intval($u['id'])?>">Edit</a>
+          &nbsp;|&nbsp;
+          <a href="upload_avatar.php?user_id=<?=intval($u['id'])?>">Avatar</a>
+          &nbsp;|&nbsp;
+          <form method="post" action="toggle_user.php" style="display:inline">
+            <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
+            <input type="hidden" name="user_id" value="<?=intval($u['id'])?>">
+            <input type="hidden" name="action" value="enable">
+            <button type="submit">Enable</button>
+          </form>
+        </td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  </div>
 </div>
+
+<script>
+function showTab(tabName) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // Show selected tab
+  document.getElementById(tabName + '-tab').classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
 </body>
 </html>
