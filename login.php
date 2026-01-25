@@ -148,12 +148,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Tools</title>
+  
+  <!-- Shared Header CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
+  
   <style>
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       background: url('assets/images/v2osk-214954-unsplash.jpg') center/cover fixed;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .login-content {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -239,6 +248,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </style>
 </head>
 <body>
+<!-- Shared Header -->
+<header class="shared-header">
+    <div class="header-container">
+        <div class="header-logo">
+            <a href="/apps/">
+                <img src="/apps/auth/assets/logo.png" alt="Logo" class="logo-image" style="height: 40px;">
+                <span class="logo-text">Veerl.es Tools</span>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="user-avatar" style="display: none;">
+                <img src="" alt="User Avatar" class="avatar-image">
+                <span class="user-name"></span>
+            </div>
+            <button class="auth-button" onclick="window.location.href='/apps/auth/login.php'">
+                <span>Login</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="login-content">
 <div class="auth-form-container">
   <h1>Login</h1>
   <?php if ($error): ?><div class="error"><?=htmlspecialchars($error)?></div><?php endif; ?>
@@ -256,6 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit">Sign in</button>
   </form>
   <p class="form-footer"><a href="password_reset_request.php">Forgot password / Set password</a></p>
+</div>
 </div>
 </body>
 </html>
