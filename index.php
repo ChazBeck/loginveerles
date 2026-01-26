@@ -14,36 +14,39 @@ render_app_header();
 <style>
 .hero {
     max-width: 1200px;
-    margin: 60px auto;
+    margin: 40px auto 80px;
     padding: 40px 20px;
     text-align: center;
 }
 .welcome {
     color: white;
     font-size: 3rem;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 .hero p {
     color: white;
     font-size: 1.5rem;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 .apps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
 }
 .app-card {
     background: rgba(255, 255, 255, 0.95);
-    padding: 30px;
+    padding: 40px 30px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     text-decoration: none;
     color: var(--color-primary);
     transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .app-card:hover {
     transform: translateY(-5px);
@@ -51,15 +54,9 @@ render_app_header();
     text-decoration: none;
 }
 .app-card h3 {
-    margin: 0 0 10px 0;
+    margin: 0;
     color: var(--color-secondary);
     font-size: 1.5rem;
-}
-.app-card p {
-    margin: 0;
-    color: #666;
-    font-size: 1rem;
-    text-shadow: none;
 }
 .login-prompt {
     background: rgba(255, 255, 255, 0.95);
@@ -89,18 +86,15 @@ render_app_header();
   <div class="apps-grid">
     <a href="/apps/urlshortener/" class="app-card">
       <h3>URL Shortener</h3>
-      <p>Create and manage short URLs</p>
     </a>
     
     <a href="/apps/pulse/" class="app-card">
-      <h3>Pulse</h3>
-      <p>Monitor your services and websites</p>
+      <h3>Pulse and Hours</h3>
     </a>
     
     <?php if (jwt_is_admin()): ?>
     <a href="admin/" class="app-card">
       <h3>Admin Panel</h3>
-      <p>Manage users and system settings</p>
     </a>
     <?php endif; ?>
   </div>
