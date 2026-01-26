@@ -24,18 +24,19 @@
         align-items: center;
     }
     .header-nav a {
-        color: white !important;
+        color: #043546 !important;
         text-decoration: none;
         font-weight: 600;
         font-size: 1rem;
         padding: 10px 20px;
         border-radius: 4px;
-        transition: background 0.2s;
-        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.2s;
+        background: rgba(229, 131, 37, 0.1);
         white-space: nowrap;
     }
     .header-nav a:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(229, 131, 37, 0.2);
+        color: #E58325 !important;
     }
     .header-right {
         margin-left: auto;
