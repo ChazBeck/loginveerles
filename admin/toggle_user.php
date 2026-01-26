@@ -12,24 +12,24 @@ $action = $_POST['action'] ?? '';
 if (!$uid || !in_array($action, ['disable','enable'])) { header('Location: index.php'); exit; }
 
 $pdo = auth_db();
+
 if ($action === 'disable') {
-    // Prevent disabling the last active Admin
-    $chk = $pdo->prepare("SELECT COUNT(*) as c FROM users WHERE role = 'Admin' AND is_active = 1");
-    $chk->execute();
-    $row = $chk->fetch(PDO::FETCH_ASSOC);
-    $countAdmins = intval($row['c'] ?? 0);
-    // check if the target user is an admin
-    $t = $pdo->prepare('SELECT role FROM users WHERE id = :id LIMIT 1');
-    $t->execute([':id' => $uid]);
-    $tr = $t->fetch(PDO::FETCH_ASSOC);
-    $isTargetAdmin = $tr && isset($tr['role']) && strcasecmp($tr['role'], 'admin') === 0;
-    if ($isTargetAdmin && $countAdmins <= 1) {
-        // cannot disable last admin
-        echo 'Action blocked: cannot disable the last active Admin.';
-        exit;
+    // Check if we can safely disable this user
+    $userStmt = $pdo->prepare('SELECT role FROM users WHERE id = :id LIMIT 1');
+    $userStmt->execute([':id' => $uid]);
+    $targetUser = $userStmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($targetUser) {
+        $check = auth_can_modify_admin($uid, $targetUser['role'], 0);
+        if (!$check['allowed']) {
+            echo 'Action blocked: ' . htmlspecialchars($check['reason']);
+            exit;
+        }
     }
+    
     $upd = $pdo->prepare('UPDATE users SET is_active = 0 WHERE id = :id');
     $upd->execute([':id' => $uid]);
+    
     // Remove sessions for that user
     $del = $pdo->prepare('DELETE FROM sessions WHERE user_id = :id');
     $del->execute([':id' => $uid]);

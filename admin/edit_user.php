@@ -15,24 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last = trim($_POST['last_name'] ?? '');
     $role = $_POST['role'] ?? 'User';
     $is_active = isset($_POST['is_active']) ? 1 : 0;
-    // Prevent demoting or disabling the last active Admin
-    $cur = $pdo->prepare('SELECT role, is_active FROM users WHERE id = :id LIMIT 1');
-    $cur->execute([':id' => $id]);
-    $current = $cur->fetch(PDO::FETCH_ASSOC);
-    if ($current) {
-        $wasAdmin = isset($current['role']) && strcasecmp($current['role'], 'admin') === 0;
-        $wasActive = intval($current['is_active']) === 1;
-        $willBeAdmin = strcasecmp($role, 'admin') === 0;
-        $willBeActive = intval($is_active) === 1;
-        if ($wasAdmin && (!$willBeAdmin || !$willBeActive)) {
-            $chk = $pdo->query("SELECT COUNT(*) as c FROM users WHERE role = 'Admin' AND is_active = 1");
-            $row = $chk->fetch(PDO::FETCH_ASSOC);
-            $countAdmins = intval($row['c'] ?? 0);
-            if ($countAdmins <= 1) {
-                echo 'Action blocked: cannot remove admin privileges or deactivate the last active Admin.';
-                exit;
-            }
-        }
+    
+    // Check if we can safely modify this user using centralized function
+    $check = auth_can_modify_admin($id, $role, $is_active);
+    if (!$check['allowed']) {
+        echo 'Action blocked: ' . htmlspecialchars($check['reason']);
+        exit;
     }
 
     // Update password if provided
