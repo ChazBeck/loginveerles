@@ -155,3 +155,44 @@ function auth_complete_password_reset($token, $newPassword) {
     $mark->execute([':id' => $row['id']]);
     return true;
 }
+
+/**
+ * Check if admin user can be modified (prevents locking out last admin)
+ * 
+ * @param int $targetUserId User ID being modified
+ * @param string $newRole New role ('User' or 'Admin')
+ * @param int $newIsActive New active status (0 or 1)
+ * @return array ['allowed' => bool, 'reason' => string]
+ */
+function auth_can_modify_admin($targetUserId, $newRole, $newIsActive) {
+    $pdo = auth_db();
+    
+    // Get current user state
+    $stmt = $pdo->prepare('SELECT role, is_active FROM users WHERE id = :id LIMIT 1');
+    $stmt->execute([':id' => $targetUserId]);
+    $current = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$current) {
+        return ['allowed' => false, 'reason' => 'User not found'];
+    }
+    
+    $wasAdmin = strcasecmp($current['role'], 'admin') === 0;
+    $isAdmin = $current['is_active'] == 1;
+    $willBeAdmin = strcasecmp($newRole, 'admin') === 0;
+    $willBeActive = $newIsActive == 1;
+    
+    // If removing admin privileges or deactivating an admin, check if this is last active admin
+    if ($wasAdmin && $isAdmin && (!$willBeAdmin || !$willBeActive)) {
+        $countStmt = $pdo->query("SELECT COUNT(*) as c FROM users WHERE role = 'Admin' AND is_active = 1");
+        $count = $countStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ((int)$count['c'] <= 1) {
+            return [
+                'allowed' => false, 
+                'reason' => 'Cannot remove the last active admin. At least one admin must remain active.'
+            ];
+        }
+    }
+    
+    return ['allowed' => true];
+}

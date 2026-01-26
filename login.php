@@ -142,185 +142,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-?><!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login - Tools</title>
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/images/veerless-logo-mark-sunrise-rgb-1920px-w-144ppi.png">
-  
-  <!-- Shared Header CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ChazBeck/sharedheader@main/header.css">
-  
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: url('assets/images/v2osk-214954-unsplash.jpg') center/cover fixed;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .login-content {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .auth-form-container {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px;
-      margin: 20px;
-    }
-    .auth-form-container h1 {
-      color: #043546;
-      margin-top: 0;
-      margin-bottom: 30px;
-      font-size: 2rem;
-      text-align: center;
-    }
-    .auth-form-container .error {
-      background: #fee;
-      color: #c33;
-      padding: 12px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      border: 1px solid #fcc;
-    }
-    .auth-form-container label {
-      display: block;
-      margin-bottom: 20px;
-      color: #043546;
-      font-weight: 500;
-    }
-    .auth-form-container input[type="email"],
-    .auth-form-container input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-      margin-top: 5px;
-      box-sizing: border-box;
-    }
-    .auth-form-container input[type="email"]:focus,
-    .auth-form-container input[type="password"]:focus {
-      outline: none;
-      border-color: #E58325;
-    }
-    .auth-form-container .checkbox-label {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .auth-form-container input[type="checkbox"] {
-      margin-right: 8px;
-      width: auto;
-    }
-    .auth-form-container button[type="submit"] {
-      width: 100%;
-      background: #E58325;
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    .auth-form-container button[type="submit"]:hover {
-      background: #d67520;
-    }
-    .auth-form-container .form-footer {
-      text-align: center;
-      margin-top: 20px;
-      color: #666;
-    }
-    .auth-form-container .form-footer a {
-      color: #E58325;
-      text-decoration: none;
-    }
-    /* Navigation styling */
-    .header-container {
-      justify-content: flex-start !important;
-      gap: 20px;
-    }
-    .header-logo {
-      margin-right: 20px;
-    }
-    .header-nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .header-nav a {
-      color: #043546 !important;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      padding: 10px 20px;
-      border-radius: 4px;
-      transition: all 0.2s;
-      background: rgba(229, 131, 37, 0.1);
-      white-space: nowrap;
-    }
-    .header-nav a:hover {
-      background: rgba(229, 131, 37, 0.2);
-      color: #E58325 !important;
-    }
-    .header-right {
-      margin-left: auto;
-    }
-  </style>
-</head>
-<body>
-<!-- Shared Header -->
-<header class="shared-header">
-    <div class="header-container">
-        <div class="header-logo">
-            <a href="/apps/">
-                <img src="assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
-            </a>
-        </div>
-        <nav class="header-nav">
-            <a href="index.php">Home</a>
-        </nav>
-        <div class="header-right">
-            <div class="user-avatar" style="display: none;">
-                <img src="" alt="User Avatar" class="avatar-image">
-                <span class="user-name"></span>
-            </div>
-            <button class="auth-button" onclick="window.location.href='login.php'">
-                <span>Login</span>
-            </button>
-        </div>
-    </div>
-</header>
+
+// Load header rendering functions
+require_once __DIR__ . '/include/render_header.php';
+
+// Initialize JWT for header display
+jwt_init();
+
+render_page_head('Login - Tools');
+render_app_header(['showNav' => false]);
+?>
+
+<style>
+body { display: flex; flex-direction: column; }
+.login-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
 
 <div class="login-content">
-<div class="auth-form-container">
-  <h1>Login</h1>
-  <?php if ($error): ?><div class="error"><?=htmlspecialchars($error)?></div><?php endif; ?>
+<div class="form-container">
+  <h1 style="text-align: center;">Login</h1>
+  <?php if ($error): ?><div class="alert alert-error"><?=htmlspecialchars($error)?></div><?php endif; ?>
   <form method="post" action="login.php<?php echo isset($_GET['return_to']) ? '?return_to=' . urlencode($_GET['return_to']) : ''; ?>">
     <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(auth_csrf_token())?>">
-    <label>Email
-      <input type="email" name="email" autocomplete="email" required>
-    </label>
-    <label>Password
-      <input type="password" name="password" autocomplete="current-password" required>
-    </label>
-    <label class="checkbox-label">
-      <input type="checkbox" name="remember"> Remember me
-    </label>
-    <button type="submit">Sign in</button>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-input" autocomplete="email" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" class="form-input" autocomplete="current-password" required>
+    </div>
+    <div class="form-group">
+      <label style="display: flex; align-items: center;">
+        <input type="checkbox" name="remember" class="form-checkbox"> Remember me
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-full">Sign in</button>
   </form>
   <p class="form-footer"><a href="password_reset_request.php">Forgot password / Set password</a></p>
 </div>

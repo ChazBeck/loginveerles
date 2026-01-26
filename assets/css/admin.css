@@ -1,0 +1,118 @@
+/* Admin-Specific Styles */
+
+.admin-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-container h1 {
+    color: var(--color-primary);
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.admin-container h2 {
+    color: var(--color-primary);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--color-secondary);
+    padding-bottom: 10px;
+}
+
+/* Admin Forms */
+.admin-form {
+    background: var(--color-bg-light);
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 15px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.admin-form input[type="email"],
+.admin-form input[type="text"],
+.admin-form input[type="password"],
+.admin-form select {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+.admin-form button {
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.admin-form button:hover {
+    background: var(--color-secondary-dark);
+}
+
+/* Admin Tables */
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+}
+
+.users-table th {
+    background: var(--color-primary);
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.users-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.users-table tr:hover {
+    background: var(--color-bg-light);
+}
+
+.users-table a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.users-table a:hover {
+    text-decoration: underline;
+}
+
+.users-table button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.users-table button:hover {
+    background: #5a6268;
+}
