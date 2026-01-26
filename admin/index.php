@@ -172,12 +172,17 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
       display: block;
     }
     /* Navigation styling */
+    .header-container {
+      justify-content: flex-start !important;
+      gap: 20px;
+    }
+    .header-logo {
+      margin-right: 20px;
+    }
     .header-nav {
       display: flex;
       gap: 20px;
       align-items: center;
-      margin-left: auto;
-      margin-right: 20px;
     }
     .header-nav a {
       color: white !important;
@@ -188,9 +193,13 @@ if ($avatarData && !empty($avatarData['avatar_url'])) {
       border-radius: 4px;
       transition: background 0.2s;
       background: rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
     }
     .header-nav a:hover {
       background: rgba(255, 255, 255, 0.2);
+    }
+    .header-right {
+      margin-left: auto;
     }
   </style>
 </head>
