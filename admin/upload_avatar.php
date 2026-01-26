@@ -204,6 +204,27 @@ $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
             margin: 15px 0;
             font-size: 0.9rem;
         }
+        /* Navigation styling */
+        .header-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+        .header-nav a {
+            color: white !important;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .header-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -215,8 +236,8 @@ $userAvatar = 'https://ui-avatars.com/api/?' . http_build_query([
                 <img src="../assets/images/veerless-logo-sunrise-rgb-1920px-w-144ppi.png" alt="Veerless Logo" class="logo-image" style="height: 50px;">
             </a>
         </div>
-        <nav class="header-nav" style="display: flex; gap: 20px; align-items: center; margin-left: auto; margin-right: 20px;">
-            <a href="../index.php" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">Home</a>
+        <nav class="header-nav">
+            <a href="../index.php">Home</a>
         </nav>
         <div class="header-right">
             <div class="user-avatar" style="display: flex;">
