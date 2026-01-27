@@ -1,5 +1,22 @@
 <?php
-// Shared header include — include after authentication is initialized
+/**
+ * DEPRECATED: This file is kept for backward compatibility only.
+ * 
+ * NEW APPS SHOULD USE:
+ * require_once __DIR__ . '/../../include/jwt_include.php';
+ * require_once __DIR__ . '/../../include/render_header.php';
+ * jwt_init();
+ * render_page_head('Your App Title', ['pathPrefix' => '../../']);
+ * render_app_header(['pathPrefix' => '../../', 'navLinks' => [['Home', '/apps/']]]);
+ * 
+ * This provides:
+ * - Consistent favicon across all apps
+ * - Modern header styling
+ * - Proper authentication integration
+ * - Responsive design
+ */
+
+// For backward compatibility with old apps
 $user = auth_get_user();
 $is_admin = $user && ($user['role'] === 'Admin');
 

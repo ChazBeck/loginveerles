@@ -11,7 +11,6 @@ render_app_header();
 ?>
 
 <style>
-<style>
 .hero {
     max-width: 1200px;
     margin: 40px auto 80px;
@@ -27,19 +26,22 @@ render_app_header();
 .hero p {
     color: white;
     font-size: 1.5rem;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 .apps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 50px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .app-card {
     background: rgba(255, 255, 255, 0.95);
-    padding: 40px 30px;
-    border-radius: 8px;
+    padding: 35px 30px;
+    border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     text-decoration: none;
     color: var(--color-primary);
@@ -56,12 +58,12 @@ render_app_header();
 .app-card h3 {
     margin: 0;
     color: var(--color-secondary);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 .login-prompt {
     background: rgba(255, 255, 255, 0.95);
-    padding: 40px;
-    border-radius: 8px;
+    padding: 50px 40px;
+    border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     max-width: 500px;
     margin: 60px auto;
@@ -70,11 +72,19 @@ render_app_header();
 .login-prompt h2 {
     color: var(--color-primary);
     margin-top: 0;
+    margin-bottom: 20px;
 }
 .login-prompt p {
     color: #666;
     text-shadow: none;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+.btn-primary {
+    display: inline-block;
+    padding: 14px 32px;
     font-size: 1rem;
+    margin-top: 10px;
 }
 </style>
 
